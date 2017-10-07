@@ -22,7 +22,7 @@ class agent:
 
     def aim(self, target_x, target_y):
         angle_between_bot_and_target = math.degrees(math.atan2(target_x - self.bot_pos_x,
-                                                                target_y - self.bot_pos_y))
+                                                               target_y - self.bot_pos_y))
 
         angle_front_to_target = angle_between_bot_and_target - self.bot_yaw * -1
 
