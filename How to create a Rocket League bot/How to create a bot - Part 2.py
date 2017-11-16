@@ -1,32 +1,30 @@
 import math
 
-BOT_NAME = "TutorialBot"  # You can change this string, if you wish
-
-class agent:
-    def __init__(self, team):
-        self.team = team
+class Agent:
+    def __init__(self, name, team, index):
+        self.index = index
 
         # Controller inputs
-        self.stick_x = 16383
-        self.stick_y = 16383
-        self.acceleration = 0
-        self.deceleration = 0
-        self.boost = 0
-        self.jump = 0
-        self.powerslide = 0
+        self.throttle = 0
+        self.steer = 0
+        self.pitch = 0
+        self.yaw = 0
+        self.roll = 0
+        self.boost = False
+        self.jump = False
+        self.powerslide = False
 
-        # Game data
-        self.bot_pos_x = 0
-        self.bot_pos_y = 0
-        self.bot_yaw = 0
-        self.ball_pos_x = 0
-        self.ball_pos_y = 0
+        # Game values
+        self.bot_pos = None
+        self.bot_rot = None
+        self.ball_pos = None
+        self.bot_yaw = None
 
     def aim(self, target_x, target_y):
-        angle_between_bot_and_target = math.degrees(math.atan2(target_x - self.bot_pos_x,
-                                                               target_y - self.bot_pos_y))
+        angle_between_bot_and_target = math.degrees(math.atan2(target_y - self.bot_pos.Y,
+                                                               target_x - self.bot_pos.X))
 
-        angle_front_to_target = angle_between_bot_and_target - self.bot_yaw * -1
+        angle_front_to_target = angle_between_bot_and_target - self.bot_yaw
 
         # Correct the values
         if angle_front_to_target < -180:
@@ -35,41 +33,29 @@ class agent:
             angle_front_to_target -= 360
 
         if angle_front_to_target < -10:
-            # If the target is more than 10 degrees left from the centre, steer right
-            self.stick_x = 32767
-        elif angle_front_to_target > 10:
             # If the target is more than 10 degrees right from the centre, steer left
-            self.stick_x = 0
+            self.steer = -1
+        elif angle_front_to_target > 10:
+            # If the target is more than 10 degrees left from the centre, steer right
+            self.steer = 1
         else:
             # If the target is less than 10 degrees from the centre, steer straight
-            self.stick_x = 16383
+            self.steer = 0
 
     def get_output_vector(self, values):
-        data = values.GameTickPacket
+        # Update game data variables
+        self.bot_pos = values.gamecars[self.index].Location
+        self.bot_rot = values.gamecars[self.index].Rotation
+        self.ball_pos = values.gameball.Location
 
-        # Update ball positions
-        self.ball_pos_x = data.gameball.Location.X
-        self.ball_pos_y = data.gameball.Location.Y  # Y axis is not height here! Z axis is height.
-
-        # Update bot positions and rotations depending on the bot's team
-        if self.team == "blue":
-            team_index = 0
-        else:
-            team_index = 1
-
-        self.bot_pos_x = data.gamecars[team_index].Location.X
-        self.bot_pos_y = data.gamecars[team_index].Location.Y
-
-        # Convert the game's rotation values to degrees
-        self.bot_yaw = abs(data.gamecars[team_index].Rotation.Yaw) % 65536 / 65536 * 360
-        if data.gamecars[team_index].Rotation.Yaw < 0:
+        # Get car's yaw and convert from Unreal Rotator units to degrees
+        self.bot_yaw = abs(self.bot_rot.Yaw) % 65536 / 65536 * 360
+        if self.bot_rot.Yaw < 0:
             self.bot_yaw *= -1
-        # Make 0 degrees the centre of the circle
-        self.bot_yaw = (self.bot_yaw + 90) % 360 - 180
 
-        self.aim(self.ball_pos_x, self.ball_pos_y)
-        self.acceleration = 32767
+        self.aim(self.ball_pos.X, self.ball_pos.Y)
+        self.throttle = 1
 
-        return [self.stick_x, self.stick_y,
-                self.acceleration, self.deceleration,
+        return [self.throttle, self.steer,
+                self.pitch, self.yaw, self.roll,
                 self.jump, self.boost, self.powerslide]
