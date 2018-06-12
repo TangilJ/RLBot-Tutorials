@@ -1,6 +1,9 @@
-class Agent:
-    def __init__(self, name, team, index):
-        self.index = index
+from rlbot.agents.base_agent import BaseAgent, SimpleControllerState
+from rlbot.utils.structures.game_data_struct import GameTickPacket
 
-    def get_output_vector(self, values):
-        return [1, 0, 0, 0, 0, False, False, False]
+class TutorialBot(BaseAgent):
+    def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
+        controller = SimpleControllerState()
+        controller.throttle = 1
+
+        return controller
