@@ -27,8 +27,7 @@ class TutorialBot(BaseAgent):
         self.dodge_interval = 0
 
     def aim(self, target_x, target_y):
-        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y,
-                                                target_x - self.bot_pos.x)
+        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y, target_x - self.bot_pos.x)
 
         angle_front_to_target = angle_between_bot_and_target - self.bot_yaw
 
@@ -62,7 +61,7 @@ class TutorialBot(BaseAgent):
 
     def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
         # Update game data variables
-        self.bot_yaw = packet.game_cars[self.team].physics.rotation.yaw
+        self.bot_yaw = packet.game_cars[self.index].physics.rotation.yaw
         self.bot_pos = packet.game_cars[self.index].physics.location
 
         # Just making the bot jump every 3 seconds as demonstration. You can remove this if-block and it won't break the code.

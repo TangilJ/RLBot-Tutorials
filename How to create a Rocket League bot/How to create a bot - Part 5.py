@@ -66,7 +66,7 @@ class TutorialBot(BaseAgent):
 
     def get_output(self, packet: GameTickPacket) -> SimpleControllerState:
         # Update game data variables
-        self.bot_yaw = packet.game_cars[self.team].physics.rotation.yaw
+        self.bot_yaw = packet.game_cars[self.index].physics.rotation.yaw
         self.bot_pos = packet.game_cars[self.index].physics.location
         ball_pos = packet.game_ball.physics.location
 
@@ -78,7 +78,7 @@ class TutorialBot(BaseAgent):
         # - Orange is behind the ball if the ball's Y axis is smaller than orange's Y axis
         self.controller.throttle = 1
 
-        if (self.index == 0 and self.bot_pos.y < ball_pos.y) or (self.index == 1 and self.bot_pos.y > ball_pos.y):
+        if (self.team == 0 and self.bot_pos.y < ball_pos.y) or (self.team == 1 and self.bot_pos.y > ball_pos.y):
             self.aim(ball_pos.x, ball_pos.y)
             if distance(self.bot_pos.x, self.bot_pos.y, ball_pos.x, ball_pos.y) < self.DISTANCE_TO_DODGE:
                 self.should_dodge = True

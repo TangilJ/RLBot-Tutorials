@@ -13,8 +13,7 @@ class TutorialBot(BaseAgent):
         self.bot_yaw = None
 
     def aim(self, target_x, target_y):
-        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y,
-                                                target_x - self.bot_pos.x)
+        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y, target_x - self.bot_pos.x)
 
         angle_front_to_target = angle_between_bot_and_target - self.bot_yaw
 

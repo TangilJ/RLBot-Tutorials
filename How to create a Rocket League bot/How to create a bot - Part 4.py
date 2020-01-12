@@ -32,8 +32,7 @@ class TutorialBot(BaseAgent):
         self.dodge_interval = 0
 
     def aim(self, target_x, target_y):
-        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y,
-                                                target_x - self.bot_pos.x)
+        angle_between_bot_and_target = math.atan2(target_y - self.bot_pos.y, target_x - self.bot_pos.x)
 
         angle_front_to_target = angle_between_bot_and_target - self.bot_yaw
 
@@ -76,7 +75,7 @@ class TutorialBot(BaseAgent):
         # - Orange is behind the ball if the ball's Y axis is smaller than orange's Y axis
         self.controller.throttle = 1
 
-        if (self.index == 0 and self.bot_pos.y < ball_pos.y) or (self.index == 1 and self.bot_pos.y > ball_pos.y):
+        if (self.team == 0 and self.bot_pos.y < ball_pos.y) or (self.team == 1 and self.bot_pos.y > ball_pos.y):
             self.aim(ball_pos.x, ball_pos.y)
             if distance(self.bot_pos.x, self.bot_pos.y, ball_pos.x, ball_pos.y) < self.DISTANCE_TO_DODGE:
                 self.should_dodge = True
